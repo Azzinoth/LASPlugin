@@ -100,6 +100,8 @@ file(GLOB Connection_To_Engine_SRC
 file(GLOB Main_SRC
 	"LASPlugin.h"
 	"LASPlugin.cpp"
+	"ThirdParty/laszip/laszip_api.c"
+	"ThirdParty/laszip/laszip_api.h"
 )
 
 # Public headers of plugin API, applications include them and get plugin through PLUGIN_MANAGER.GetPlugin<T>.
@@ -241,6 +243,12 @@ endfunction()
 # Plugin without main module gets all its modules from AdditionalModules.cmake.
 if(Main_SRC)
     fe_add_plugin_module(${PROJECT_NAME} STATIC_LIBRARY SOURCES ${Main_SRC})
+
+    # LASzip is loaded at runtime by name LASzip64.dll, plugin loads it from Build/Debug or Build/Release, games get it next to executable.
+    add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E make_directory "${CMAKE_CURRENT_SOURCE_DIR}/Build/$<CONFIG>"
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different "${CMAKE_CURRENT_SOURCE_DIR}/ThirdParty/laszip/lib/$<CONFIG>/Dynamic_runtime/laszip3.dll" "${CMAKE_CURRENT_SOURCE_DIR}/Build/$<CONFIG>/LASzip64.dll"
+    )
 
     # set the startup project
     set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT ${PROJECT_NAME})
