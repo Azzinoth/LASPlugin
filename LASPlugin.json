@@ -1,7 +1,7 @@
 {
 	"ID": "c2bceb24-3336-4c25-9951-56ef3bdb9b19",
 	"Name": "LASPlugin",
-	"Version": "1.0.0",
+	"Version": "1.0.1",
 	"Description": "Imports and exports LAS and LAZ lidar point clouds using LASzip, and gives access to LAS headers and per-point attributes.",
 	"SupportedOS": [ "Windows" ],
 	"Dependencies": [],
