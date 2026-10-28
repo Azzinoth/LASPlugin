@@ -11,7 +11,7 @@
 // The plugin manager uses it to create and destroy the plugin instance.
 REGISTER_PLUGIN(LASPlugin)
 
-void LASPlugin::OnLoad()
+bool LASPlugin::OnLoad()
 {
 #ifdef _DEBUG
 	const std::string ConfigurationFolder = "Debug/";
@@ -24,14 +24,15 @@ void LASPlugin::OnLoad()
 	LASzipDLL = LoadLibraryA((GetPluginDirectory() + ConfigurationFolder + "LASzip64.dll").c_str());
 	if (laszip_load_dll() != 0)
 	{
+		// Plugin stays loaded, its functions fail while LASzip is not loaded.
 		LOG.Add("LASPlugin::OnLoad: Loading LASzip DLL failed, LAS and LAZ files are not supported", "LAS_PLUGIN", FE_LOG_ERROR);
-		return;
+		return true;
 	}
 	bLASzipLoaded = true;
 
 	// Point clouds are created on GPU.
 	if (APPLICATION.GetGraphicsMode() == FEGraphicsMode::None)
-		return;
+		return true;
 
 	FEResourceImporter Importer;
 	Importer.Description = "LAS point cloud";
@@ -50,6 +51,7 @@ void LASPlugin::OnLoad()
 	Exporter.Extensions = { "laz" };
 	Exporter.Export = [this](FEObject* Object, const std::string& FilePath) { return ExportPointCloud(Object, FilePath, true); };
 	LAZExporterID = RESOURCE_MANAGER.RegisterResourceExporter(Exporter);
+	return true;
 }
 
 void LASPlugin::OnUnload()

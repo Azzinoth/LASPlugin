@@ -20,7 +20,7 @@ class LASPlugin : public FEPluginCore, public LASPluginInterface
 	std::vector<FEObject*> ImportPointCloud(const std::string& FilePath);
 	bool ExportPointCloud(FEObject* Object, const std::string& FilePath, bool bIsCompressed);
 public:
-	void OnLoad() override;
+	bool OnLoad() override;
 	void OnUnload() override;
 	void OnUpdate(double DeltaTime) override;
 
